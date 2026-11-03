@@ -10,7 +10,16 @@ const connectionString =
 
 async function runMigration() {
   console.log("Applying database migrations...");
-  const pool = new Pool({ connectionString });
+  const useSsl =
+    connectionString.includes("sslmode=require") ||
+    connectionString.includes("neon.tech") ||
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("supabase.com");
+
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const client = await pool.connect();
 
   try {

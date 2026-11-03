@@ -20,7 +20,16 @@ async function seedAdmin() {
   console.log(`Email: ${email}`);
   console.log("--------------------------------------------------");
 
-  const pool = new Pool({ connectionString });
+  const useSsl =
+    connectionString.includes("sslmode=require") ||
+    connectionString.includes("neon.tech") ||
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("supabase.com");
+
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const db = drizzle(pool);
 
   try {

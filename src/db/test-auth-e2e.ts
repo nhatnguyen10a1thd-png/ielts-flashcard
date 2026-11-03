@@ -4,13 +4,25 @@ import { users } from "./schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "../lib/auth/password";
 import { createSessionToken, verifySessionToken } from "../lib/auth/session";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@127.0.0.1:5432/ielts_db";
 
 async function testAuthE2E() {
   console.log("Running Auth E2E verification test...");
-  const pool = new Pool({ connectionString });
+  const useSsl =
+    connectionString.includes("sslmode=require") ||
+    connectionString.includes("neon.tech") ||
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("supabase.com");
+
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const db = drizzle(pool);
 
   try {

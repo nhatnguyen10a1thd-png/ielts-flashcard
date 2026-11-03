@@ -14,7 +14,8 @@ const isProduction = process.env.NODE_ENV === "production";
 const useSsl =
   connectionString.includes("sslmode=require") ||
   connectionString.includes("neon.tech") ||
-  connectionString.includes("supabase.co");
+  connectionString.includes("supabase.co") ||
+  connectionString.includes("supabase.com");
 
 const pool =
   global.__dbPool ||

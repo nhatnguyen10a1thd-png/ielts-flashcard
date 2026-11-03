@@ -7,6 +7,9 @@ import { createSessionToken, verifySessionToken } from "../lib/auth/session";
 import { parseCsvContent } from "../lib/import/file-parser";
 import { processBatchImport } from "../lib/import/importer";
 import { generateQuizAction } from "../actions/quiz";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@127.0.0.1:5432/ielts_db";
@@ -21,7 +24,16 @@ async function testCompleteSystemE2E() {
   console.log("5. Bảo mật & Kiểm soát quyền truy cập Admin");
   console.log("==================================================================\n");
 
-  const pool = new Pool({ connectionString });
+  const useSsl =
+    connectionString.includes("sslmode=require") ||
+    connectionString.includes("neon.tech") ||
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("supabase.com");
+
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const db = drizzle(pool);
 
   try {
