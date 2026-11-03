@@ -7,6 +7,7 @@ import { STRINGS } from "@/lib/constants/strings";
 import { ThemeToggle } from "./ThemeToggle";
 import { SessionUser } from "@/lib/auth/session";
 import { logoutAction } from "@/actions/auth";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import { BookOpen, LogOut, Menu, ShieldCheck, User as UserIcon, X } from "lucide-react";
 
 interface NavbarProps {
@@ -23,16 +24,21 @@ export function Navbar({ user }: NavbarProps) {
     <header className="sticky top-0 z-40 w-full border-b border-[var(--border-light)] bg-[var(--canvas)]/95 backdrop-blur-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo with Owl Mascot */}
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-2 group font-serif text-xl sm:text-2xl font-bold tracking-tight text-[var(--ink)]"
+              className="flex items-center gap-2.5 group tracking-tight text-[var(--ink)]"
             >
-              <span className="w-8 h-8 rounded-sm bg-[var(--navy)] text-[var(--canvas)] flex items-center justify-center text-base font-serif shadow-xs">
-                I
-              </span>
-              <span>{STRINGS.app.name}</span>
+              <OwlMascot variant="badge" size={38} className="transition-transform group-hover:scale-105" />
+              <div className="flex flex-col">
+                <span className="font-serif text-lg sm:text-xl font-bold leading-tight flex items-center gap-1.5">
+                  {STRINGS.app.name}
+                </span>
+                <span className="text-[10px] font-sans font-semibold tracking-wider uppercase text-[var(--amber)]">
+                  {STRINGS.app.mascotName}
+                </span>
+              </div>
             </Link>
           </div>
 

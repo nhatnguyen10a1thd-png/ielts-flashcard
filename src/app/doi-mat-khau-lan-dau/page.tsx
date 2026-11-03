@@ -2,13 +2,10 @@
 
 import { useActionState, useEffect } from "react";
 import { firstLoginChangePasswordAction } from "@/actions/auth";
-import { useRouter } from "next/navigation";
 import { STRINGS } from "@/lib/constants/strings";
 import { KeyRound, ShieldAlert, AlertCircle } from "lucide-react";
 
 export default function FirstLoginChangePasswordPage() {
-  const router = useRouter();
-
   const [state, formAction, isPending] = useActionState(
     firstLoginChangePasswordAction,
     { success: false }
@@ -16,10 +13,9 @@ export default function FirstLoginChangePasswordPage() {
 
   useEffect(() => {
     if (state.success && state.data?.redirectUrl) {
-      router.push(state.data.redirectUrl);
-      router.refresh();
+      window.location.href = state.data.redirectUrl;
     }
-  }, [state, router]);
+  }, [state]);
 
   return (
     <div className="min-h-[calc(100vh-10rem)] flex items-center justify-center px-4 py-12">
@@ -103,10 +99,14 @@ export default function FirstLoginChangePasswordPage() {
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || state.success}
             className="w-full py-2.5 px-4 mt-2 rounded-md bg-[var(--burgundy)] hover:bg-[var(--burgundy-hover)] text-[#faf7f2] text-sm font-medium transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isPending ? "Đang xử lý..." : STRINGS.auth.changePasswordButton}
+            {state.success
+              ? "Đang chuyển hướng..."
+              : isPending
+              ? "Đang xử lý..."
+              : STRINGS.auth.changePasswordButton}
           </button>
         </form>
       </div>

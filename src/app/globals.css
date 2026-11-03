@@ -1,103 +1,155 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #faf7f2;
+  /* Owl Scholar Theme: Warm Ivory Parchment Canvas */
+  --canvas: #faf8f4;
   --surface: #ffffff;
-  --surface-raised: #f5f0e6;
-  --surface-hover: #f0e9dc;
-  --ink: #221c19;
-  --ink-secondary: #584f49;
-  --ink-muted: #8a7f76;
-  --border-light: #e6ddd2;
-  --border-medium: #d4c8ba;
-  --navy: #1b2a4a;
-  --navy-hover: #263c69;
-  --burgundy: #722f37;
-  --burgundy-hover: #883942;
-  --sage: #2d5a3f;
-  --sage-light: #eaf3ec;
-  --wine-light: #fbebee;
+  --surface-raised: #f4efe6;
+  --surface-hover: #ece5d8;
+  --ink: #191e24;
+  --ink-secondary: #4b5563;
+  --ink-muted: #788494;
+  --border-light: #e7e0d3;
+  --border-medium: #d4ccbd;
+
+  /* Accent Colors: Owl Wisdom Midnight & Amber Gold */
+  --navy: #0f233a;
+  --navy-hover: #193556;
+  --amber: #d97706;
+  --amber-hover: #b45309;
+  --amber-light: #fef3c7;
+  --burgundy: #881337;
+  --burgundy-hover: #9f1239;
+  --sage: #166534;
+  --sage-light: #ecfdf5;
+  --wine-light: #fff1f2;
+
+  /* Typography Font Stacks */
+  --font-serif: "Lora", "Merriweather", "Charter", "Cambria", "Georgia", serif;
+  --font-body: "Source Sans 3", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .dark {
-  --canvas: #0e141f;
-  --surface: #141d2c;
-  --surface-raised: #1b263a;
-  --surface-hover: #223048;
-  --ink: #f4eee5;
-  --ink-secondary: #c7beaf;
-  --ink-muted: #8d8475;
-  --border-light: #25334c;
-  --border-medium: #334464;
-  --navy: #7e9ec9;
-  --navy-hover: #98b6dd;
-  --burgundy: #c26972;
-  --burgundy-hover: #d27c85;
-  --sage: #52966e;
-  --sage-light: #162a1e;
-  --wine-light: #2f181c;
+  /* Owl Night Study: Deep Midnight Sky */
+  --canvas: #0a111a;
+  --surface: #111d2c;
+  --surface-raised: #18283d;
+  --surface-hover: #213651;
+  --ink: #f3f5f8;
+  --ink-secondary: #9da8b6;
+  --ink-muted: #6b7787;
+  --border-light: #1e3047;
+  --border-medium: #2a4160;
+
+  /* Dark mode accents */
+  --navy: #7ca5db;
+  --navy-hover: #9abef0;
+  --amber: #fbbf24;
+  --amber-hover: #f59e0b;
+  --amber-light: #32230a;
+  --burgundy: #f43f5e;
+  --burgundy-hover: #fb7185;
+  --sage: #34d399;
+  --sage-light: #0d2a1f;
+  --wine-light: #321017;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --canvas: #0e141f;
-    --surface: #141d2c;
-    --surface-raised: #1b263a;
-    --surface-hover: #223048;
-    --ink: #f4eee5;
-    --ink-secondary: #c7beaf;
-    --ink-muted: #8d8475;
-    --border-light: #25334c;
-    --border-medium: #334464;
-    --navy: #7e9ec9;
-    --navy-hover: #98b6dd;
-    --burgundy: #c26972;
-    --burgundy-hover: #d27c85;
-    --sage: #52966e;
-    --sage-light: #162a1e;
-    --wine-light: #2f181c;
+    --canvas: #0a111a;
+    --surface: #111d2c;
+    --surface-raised: #18283d;
+    --surface-hover: #213651;
+    --ink: #f3f5f8;
+    --ink-secondary: #9da8b6;
+    --ink-muted: #6b7787;
+    --border-light: #1e3047;
+    --border-medium: #2a4160;
+    --navy: #7ca5db;
+    --navy-hover: #9abef0;
+    --amber: #fbbf24;
+    --amber-hover: #f59e0b;
+    --amber-light: #32230a;
+    --burgundy: #f43f5e;
+    --burgundy-hover: #fb7185;
+    --sage: #34d399;
+    --sage-light: #0d2a1f;
+    --wine-light: #321017;
   }
 }
 
 body {
   background-color: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
   min-height: 100vh;
   transition: background-color 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, .font-serif {
-  font-family: var(--font-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: var(--font-serif);
 }
 
-/* 3D Flashcard transformations */
+/* 3D Flashcard Performance Optimizations */
 .perspective-1000 {
   perspective: 1000px;
+  -webkit-perspective: 1000px;
 }
 
 .transform-style-3d {
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .backface-hidden {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .rotate-y-180 {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translate3d(0, 0, 0);
+  -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
 }
 
-/* Elegant scrollbar */
+.card-touch-surface {
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  contain: layout style;
+}
+
+/* Subtle Scholar Owl float animation */
+@keyframes owlFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-owl-float {
+  animation: owlFloat 4s ease-in-out infinite;
+}
+
+/* Smooth custom scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: var(--canvas);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border-medium);
-  border-radius: 4px;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { speakEnglishWord, isSpeechSupported } from "@/lib/speech/speaker";
 import { toggleWordKnownAction, resetTopicProgressAction, StudyWordItem } from "@/actions/study";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import {
   Volume2,
   RotateCw,
@@ -18,6 +19,7 @@ import {
   CheckCircle2,
   Brain,
   HelpCircle,
+  GraduationCap,
 } from "lucide-react";
 
 interface FlashcardPlayerProps {
@@ -213,33 +215,33 @@ export function FlashcardPlayer({
 
   if (activeWords.length === 0) {
     return (
-      <div className="p-10 max-w-xl mx-auto rounded-lg bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-4 shadow-xs">
-        <div className="p-3 w-12 h-12 rounded-full bg-[var(--sage-light)] text-[var(--sage)] mx-auto flex items-center justify-center">
-          <CheckCircle2 className="w-6 h-6" />
+      <div className="p-8 sm:p-12 max-w-xl mx-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-5 shadow-xs">
+        <OwlMascot variant="thinking" size={90} className="mx-auto" />
+        <div className="space-y-1.5">
+          <h3 className="font-serif font-bold text-xl text-[var(--ink)]">
+            {filterUnknownOnly ? "Tuyệt vời! Bạn đã thuộc tất cả từ trong chủ đề này." : "Chưa có từ vựng nào trong chủ đề."}
+          </h3>
+          <p className="text-xs sm:text-sm text-[var(--ink-secondary)] max-w-md mx-auto leading-relaxed">
+            {filterUnknownOnly
+              ? "Cú Tri Thức ghi nhận bạn đã nắm vững toàn bộ từ vựng ở đây. Hãy ôn lại hoặc làm bài kiểm tra để củng cố nhé!"
+              : "Chủ đề này hiện chưa có dữ liệu từ vựng. Cú đang chuẩn bị thêm tài liệu!"}
+          </p>
         </div>
-        <h3 className="font-serif font-bold text-lg text-[var(--ink)]">
-          {filterUnknownOnly ? "Tuyệt vời! Bạn đã thuộc tất cả từ trong chủ đề này." : "Chưa có từ vựng nào trong chủ đề."}
-        </h3>
-        <p className="text-xs text-[var(--ink-secondary)]">
-          {filterUnknownOnly
-            ? "Bạn có thể tắt bộ lọc để ôn lại toàn bộ từ vựng, hoặc bắt đầu làm bài kiểm tra để củng cố kiến thức."
-            : "Chủ đề này hiện chưa có dữ liệu từ vựng."}
-        </p>
-        <div className="pt-2 flex items-center justify-center gap-3">
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           {filterUnknownOnly && (
             <button
               onClick={() => {
                 setFilterUnknownOnly(false);
                 handleResetStudy();
               }}
-              className="px-4 py-2 text-xs font-semibold rounded bg-[var(--navy)] text-[#faf7f2]"
+              className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] transition-colors shadow-xs"
             >
               Xem lại tất cả từ vựng
             </button>
           )}
           <Link
             href="/chu-de"
-            className="px-4 py-2 text-xs font-medium border border-[var(--border-medium)] rounded bg-[var(--surface)] text-[var(--ink)]"
+            className="px-5 py-2.5 text-xs font-medium border border-[var(--border-medium)] rounded-lg bg-[var(--surface)] text-[var(--ink)] hover:bg-[var(--surface-raised)] transition-colors"
           >
             Quay lại danh sách chủ đề
           </Link>
@@ -251,38 +253,46 @@ export function FlashcardPlayer({
   // MÀN HÌNH HOÀN THÀNH LƯỢT HỌC
   if (isCompleted) {
     return (
-      <div className="max-w-xl mx-auto p-8 rounded-lg bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-6 shadow-xs animate-in fade-in duration-300">
-        <div className="w-14 h-14 rounded-full bg-[var(--surface-raised)] text-[var(--navy)] flex items-center justify-center mx-auto shadow-xs">
-          <Sparkles className="w-7 h-7 text-[var(--burgundy)]" />
+      <div className="max-w-xl mx-auto p-8 sm:p-10 rounded-2xl bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-6 shadow-md animate-in fade-in duration-300">
+        <div className="relative inline-block mx-auto">
+          <OwlMascot variant="celebrating" size={110} className="mx-auto" />
+          <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--amber)] text-white text-[10px] font-bold px-3 py-0.5 rounded-full shadow-xs uppercase tracking-wider">
+            Xuất sắc!
+          </span>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-serif font-bold text-[var(--ink)]">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--ink)]">
             Hoàn thành lượt học!
           </h2>
-          <p className="mt-1 text-xs text-[var(--ink-secondary)]">
-            Bạn vừa xem qua toàn bộ {activeWords.length} thẻ từ vựng của chủ đề <strong>{topic.name}</strong>.
+          <p className="text-xs sm:text-sm text-[var(--ink-secondary)]">
+            Cú Tri Thức chúc mừng bạn đã hoàn thành {activeWords.length} thẻ từ của chủ đề <strong>{topic.name}</strong>.
           </p>
         </div>
 
         {/* Progress box */}
-        <div className="p-4 rounded-md bg-[var(--surface-raised)] border border-[var(--border-light)] text-center space-y-2">
+        <div className="p-5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-medium)] text-center space-y-3">
           <div className="flex items-center justify-between text-xs font-semibold text-[var(--ink)]">
-            <span>Tiến độ ghi nhớ</span>
-            <span className="text-[var(--navy)]">{knownCount} / {wordList.length} từ ({progressPercent}%)</span>
+            <span>Tiến độ tích lũy</span>
+            <span className="text-[var(--navy)] font-bold">{knownCount} / {wordList.length} từ ({progressPercent}%)</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden">
+          <div className="w-full h-2.5 rounded-full bg-[var(--border-medium)] overflow-hidden">
             <div
-              className="h-full bg-[var(--navy)] transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[var(--amber)] to-[var(--sage)] transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
+          <p className="text-[11px] text-[var(--ink-muted)]">
+            {progressPercent >= 80
+              ? "Trí nhớ của bạn rất sắc bén! Sẵn sàng thử sức với bài kiểm tra chưa?"
+              : "Hãy kiên trì lặp lại ngắt quãng để khắc sâu vào trí nhớ dài hạn."}
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <button
             onClick={handleResetStudy}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-md bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-xs font-semibold transition-colors shadow-xs"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-xs font-semibold transition-all shadow-xs hover:-translate-y-0.5 active:translate-y-0"
           >
             <RotateCw className="w-4 h-4" />
             <span>Học lại chủ đề này</span>
@@ -290,10 +300,10 @@ export function FlashcardPlayer({
 
           <Link
             href={`/kiem-tra?topic=${topic.id}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-md border border-[var(--border-medium)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--ink)] text-xs font-semibold transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-[var(--border-medium)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--ink)] text-xs font-semibold transition-colors"
           >
-            <Brain className="w-4 h-4 text-[var(--burgundy)]" />
-            <span>Làm bài kiểm tra</span>
+            <Brain className="w-4 h-4 text-[var(--amber)]" />
+            <span>Làm bài kiểm tra ngay</span>
           </Link>
         </div>
       </div>
@@ -301,17 +311,40 @@ export function FlashcardPlayer({
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-5">
+      {/* Diligent Owl Companion Status */}
+      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-[var(--surface)] border border-[var(--border-light)] shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <OwlMascot variant="badge" size={32} />
+          <div>
+            <span className="block text-xs font-semibold text-[var(--ink)]">
+              {progressPercent === 100
+                ? "Cú khen ngợi: Tuyệt đỉnh! Bạn đã thuộc toàn bộ từ vựng!"
+                : progressPercent >= 50
+                ? "Cú tiếp sức: Đã vượt qua 50% chặng đường, kiên trì nhé!"
+                : "Cú đồng hành: Ghi nhớ từng từ thật vững chắc nhé bạn học!"}
+            </span>
+            <span className="text-[10px] text-[var(--ink-muted)]">
+              Chủ đề: {topic.name}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-[var(--amber-light)] text-[var(--amber)]">
+          <span>{knownCount}/{wordList.length}</span>
+          <span className="hidden sm:inline text-[11px] font-medium">thuộc</span>
+        </div>
+      </div>
+
       {/* Top Controls Bar: Mode Switcher, Filter, Auto Pronounce */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Study Mode: Standard vs Reverse */}
-        <div className="inline-flex p-1 rounded-md bg-[var(--surface-raised)] border border-[var(--border-medium)]">
+        <div className="inline-flex p-1 rounded-lg bg-[var(--surface-raised)] border border-[var(--border-medium)]">
           <button
             onClick={() => {
               setMode("standard");
               setIsFlipped(false);
             }}
-            className={`px-3 py-1.5 rounded-sm font-semibold transition-colors ${
+            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
               mode === "standard"
                 ? "bg-[var(--surface)] text-[var(--navy)] shadow-xs"
                 : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -324,7 +357,7 @@ export function FlashcardPlayer({
               setMode("reverse");
               setIsFlipped(false);
             }}
-            className={`px-3 py-1.5 rounded-sm font-semibold transition-colors ${
+            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
               mode === "reverse"
                 ? "bg-[var(--surface)] text-[var(--navy)] shadow-xs"
                 : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -335,14 +368,14 @@ export function FlashcardPlayer({
         </div>
 
         {/* Filter & Pronounce Switches */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => {
               setFilterUnknownOnly(!filterUnknownOnly);
               setCurrentIndex(0);
               setIsFlipped(false);
             }}
-            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border transition-colors ${
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors ${
               filterUnknownOnly
                 ? "border-[var(--burgundy)] bg-[var(--wine-light)] text-[var(--burgundy)] font-semibold"
                 : "border-[var(--border-medium)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -355,7 +388,7 @@ export function FlashcardPlayer({
 
           <button
             onClick={toggleAutoPronounce}
-            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border transition-colors ${
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors ${
               autoPronounce
                 ? "border-[var(--navy)] bg-[var(--surface-raised)] text-[var(--navy)] font-semibold"
                 : "border-[var(--border-medium)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]"
@@ -363,7 +396,7 @@ export function FlashcardPlayer({
             title={autoPronounce ? "Đang bật tự phát âm" : "Đang tắt tự phát âm"}
           >
             {autoPronounce ? <Volume2 className="w-3.5 h-3.5 text-[var(--navy)]" /> : <VolumeX className="w-3.5 h-3.5" />}
-            <span>Tự phát âm</span>
+            <span className="hidden sm:inline">Tự phát âm</span>
           </button>
         </div>
       </div>
@@ -375,26 +408,26 @@ export function FlashcardPlayer({
             Thẻ <strong>{currentIndex + 1}</strong> / {activeWords.length}
           </span>
           <span>
-            Đã thuộc: <strong className="text-[var(--sage)]">{knownCount}</strong> / {wordList.length} ({progressPercent}%)
+            Tiến độ: <strong className="text-[var(--sage)]">{progressPercent}%</strong>
           </span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-[var(--border-medium)] overflow-hidden">
+        <div className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden">
           <div
-            className="h-full bg-[var(--navy)] transition-all duration-300"
+            className="h-full bg-gradient-to-r from-[var(--navy)] to-[var(--amber)] transition-all duration-300"
             style={{ width: `${((currentIndex + 1) / activeWords.length) * 100}%` }}
           />
         </div>
       </div>
 
-      {/* 3D FLASHCARD */}
+      {/* 3D FLASHCARD with Hardware Acceleration */}
       <div
-        className="perspective-1000 select-none cursor-pointer"
+        className="perspective-1000 select-none cursor-pointer card-touch-surface"
         onClick={handleFlip}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className={`relative min-h-[300px] sm:min-h-[340px] w-full rounded-xl border border-[var(--border-medium)] bg-[var(--surface)] shadow-sm transition-transform duration-500 transform-style-3d p-8 flex flex-col justify-between ${
+          className={`relative min-h-[310px] sm:min-h-[350px] w-full rounded-2xl border border-[var(--border-medium)] bg-[var(--surface)] shadow-md transition-transform duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] transform-style-3d p-8 flex flex-col justify-between hover:shadow-lg ${
             isFlipped ? "rotate-y-180" : ""
           }`}
         >

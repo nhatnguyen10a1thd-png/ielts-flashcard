@@ -19,12 +19,12 @@ export default async function AdminLayout({
 }) {
   const session = await getSession();
 
-  if (!session || session.role !== "admin") {
+  if (!session) {
     redirect("/dang-nhap?redirect=/admin");
   }
 
-  if (session.mustChangePassword) {
-    redirect("/doi-mat-khau-lan-dau");
+  if (session.role !== "admin") {
+    redirect("/");
   }
 
   return (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { QuizQuestion, submitQuizAction, QuizSubmissionAnswer } from "@/actions/quiz";
 import { checkTypingAnswer } from "@/lib/quiz/random-sampler";
 import { speakEnglishWord } from "@/lib/speech/speaker";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import {
   Volume2,
   CheckCircle2,
@@ -17,6 +18,7 @@ import {
   Award,
   BookOpen,
   ArrowLeft,
+  GraduationCap,
 } from "lucide-react";
 
 interface QuizPlayerProps {
@@ -145,23 +147,50 @@ export function QuizPlayer({
   };
 
   // Xử lý chế độ 2: Trắc nghiệm 4 đáp án
-  const handleOptionSelect = (option: string) => {
-    if (isAnswerRevealed || !currentQ) return;
-    setSelectedOption(option);
-    setIsAnswerRevealed(true);
+  const handleOptionSelect = useCallback(
+    (option: string) => {
+      if (isAnswerRevealed || !currentQ) return;
+      setSelectedOption(option);
+      setIsAnswerRevealed(true);
 
-    const isCorrect = option === currentQ.correctAnswer;
+      const isCorrect = option === currentQ.correctAnswer;
 
-    // Chờ 900ms để người học kịp nhìn đáp án trước khi tự chuyển câu
-    setTimeout(() => {
-      advanceToNext({
-        wordId: currentQ.wordId,
-        userAnswer: option,
-        correctAnswer: currentQ.correctAnswer,
-        isCorrect,
-      });
-    }, 900);
-  };
+      // Chờ 800ms để người học kịp nhìn đáp án trước khi tự chuyển câu
+      setTimeout(() => {
+        advanceToNext({
+          wordId: currentQ.wordId,
+          userAnswer: option,
+          correctAnswer: currentQ.correctAnswer,
+          isCorrect,
+        });
+      }, 800);
+    },
+    [isAnswerRevealed, currentQ, advanceToNext]
+  );
+
+  // Phím tắt bàn phím cho Trắc nghiệm (1-4 hoặc A-D) để thao tác cực nhanh không trễ
+  useEffect(() => {
+    if (mode !== "multiple_choice" || isAnswerRevealed || !currentQ || isFinished) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      const key = e.key.toUpperCase();
+      let selectedIdx = -1;
+      if (key === "1" || key === "A") selectedIdx = 0;
+      else if (key === "2" || key === "B") selectedIdx = 1;
+      else if (key === "3" || key === "C") selectedIdx = 2;
+      else if (key === "4" || key === "D") selectedIdx = 3;
+
+      if (selectedIdx >= 0 && currentQ.options && currentQ.options[selectedIdx]) {
+        e.preventDefault();
+        handleOptionSelect(currentQ.options[selectedIdx]);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mode, isAnswerRevealed, currentQ, isFinished, handleOptionSelect]);
 
   // Xử lý chế độ 3: Gõ từ tiếng Anh
   const handleTypingSubmit = (e?: React.FormEvent) => {
@@ -209,24 +238,37 @@ export function QuizPlayer({
 
     return (
       <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-300">
-        {/* Result Header Card */}
-        <div className="p-8 rounded-lg bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-6 shadow-xs">
-          <div className="w-16 h-16 rounded-full bg-[var(--surface-raised)] flex items-center justify-center mx-auto shadow-xs">
-            <Award className="w-8 h-8 text-[var(--navy)]" />
+        {/* Result Header Card with Owl Evaluation */}
+        <div className="p-8 sm:p-10 rounded-2xl bg-[var(--surface)] border border-[var(--border-light)] text-center space-y-6 shadow-md">
+          <div className="relative inline-block mx-auto">
+            {percent >= 80 ? (
+              <OwlMascot variant="celebrating" size={110} />
+            ) : percent >= 50 ? (
+              <OwlMascot variant="studious" size={105} />
+            ) : (
+              <OwlMascot variant="thinking" size={105} />
+            )}
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--amber)] text-white text-[10px] font-bold px-3 py-0.5 rounded-full shadow-xs uppercase tracking-wider">
+              {percent >= 80 ? "Xuất sắc" : percent >= 50 ? "Khá tốt" : "Cần ôn luyện"}
+            </span>
           </div>
 
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]">
-              Kết quả bài kiểm tra
+          <div className="space-y-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--amber)]">
+              Đánh giá từ Cú Giám Thị
             </span>
-            <h2 className="text-3xl font-serif font-bold text-[var(--ink)] mt-1">
-              {percent >= 80 ? "Xuất sắc! Bạn nắm từ rất vững." : percent >= 50 ? "Khá tốt! Cần ôn luyện thêm." : "Cần rèn luyện thêm để ghi nhớ sâu."}
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--ink)]">
+              {percent >= 80
+                ? "Thần tốc và sắc bén! Bạn đã làm chủ bộ từ vựng này."
+                : percent >= 50
+                ? "Nỗ lực đáng ghi nhận! Hãy ôn lại các từ chưa đúng để đạt 100%."
+                : "Kiên trì là chìa khóa! Cú sẽ đồng hành cùng bạn ôn luyện lại."}
             </h2>
           </div>
 
           {/* 3 Metric Stats */}
-          <div className="grid grid-cols-3 gap-4 pt-2">
-            <div className="p-4 rounded-md bg-[var(--surface-raised)] border border-[var(--border-light)]">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
+            <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-medium)]">
               <span className="block text-2xl font-serif font-bold text-[var(--ink)]">
                 {correctCount} / {totalCount}
               </span>
@@ -235,7 +277,7 @@ export function QuizPlayer({
               </span>
             </div>
 
-            <div className="p-4 rounded-md bg-[var(--surface-raised)] border border-[var(--border-light)]">
+            <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-medium)]">
               <span className={`block text-2xl font-serif font-bold ${percent >= 70 ? "text-[var(--sage)]" : "text-[var(--burgundy)]"}`}>
                 {percent}%
               </span>
@@ -244,7 +286,7 @@ export function QuizPlayer({
               </span>
             </div>
 
-            <div className="p-4 rounded-md bg-[var(--surface-raised)] border border-[var(--border-light)]">
+            <div className="p-4 rounded-xl bg-[var(--surface-raised)] border border-[var(--border-medium)]">
               <span className="block text-2xl font-serif font-bold text-[var(--ink)]">
                 {formatTime(secondsElapsed)}
               </span>
@@ -336,22 +378,34 @@ export function QuizPlayer({
 
   // MÀN HÌNH ĐANG LÀM BÀI THI
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Top Header: Question index & Timer */}
-      <div className="flex items-center justify-between text-xs text-[var(--ink-secondary)]">
-        <span className="font-semibold text-[var(--ink)]">
-          Câu hỏi <strong>{currentIndex + 1}</strong> / {questions.length}
-        </span>
-        <div className="flex items-center gap-1.5 font-mono text-[var(--ink)]">
-          <Clock className="w-3.5 h-3.5 text-[var(--navy)]" />
+    <div className="max-w-2xl mx-auto space-y-5">
+      {/* Top Header with Owl Proctor Mascot */}
+      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-[var(--surface)] border border-[var(--border-light)] shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <OwlMascot variant="badge" size={32} />
+          <div>
+            <span className="block text-xs font-semibold text-[var(--ink)]">
+              Cú Giám Thị • Câu {currentIndex + 1} / {questions.length}
+            </span>
+            <span className="text-[10px] text-[var(--ink-muted)]">
+              {mode === "multiple_choice"
+                ? "Trắc nghiệm 4 đáp án (Phím 1-4 hoặc A-D)"
+                : mode === "typing"
+                ? "Gõ từ vựng tiếng Anh chính xác"
+                : "Lật thẻ tự đánh giá độ thuộc"}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 font-mono text-xs font-semibold px-2.5 py-1 rounded-md bg-[var(--surface-raised)] border border-[var(--border-medium)] text-[var(--ink)]">
+          <Clock className="w-3.5 h-3.5 text-[var(--amber)]" />
           <span>{formatTime(secondsElapsed)}</span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full h-1.5 rounded-full bg-[var(--border-medium)] overflow-hidden">
+      <div className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden">
         <div
-          className="h-full bg-[var(--navy)] transition-all duration-300"
+          className="h-full bg-gradient-to-r from-[var(--navy)] to-[var(--amber)] transition-all duration-300"
           style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
         />
       </div>

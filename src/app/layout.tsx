@@ -1,26 +1,44 @@
-import type { Metadata } from "next";
-import { Lora, Source_Sans_3 } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { getSession } from "@/lib/auth/session";
 import { STRINGS } from "@/lib/constants/strings";
 import { Suspense } from "react";
 
-const lora = Lora({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-serif",
-  display: "swap",
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#18191d" },
+  ],
+};
 
-const sourceSans = Source_Sans_3({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-body",
-  display: "swap",
-});
+const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://ielts-flashcard.vn").replace(/\/$/, "");
 
 export const metadata: Metadata = {
-  title: `${STRINGS.app.name} - ${STRINGS.app.tagline}`,
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: `${STRINGS.app.name} - ${STRINGS.app.tagline}`,
+    template: `%s | ${STRINGS.app.name}`,
+  },
   description: STRINGS.app.description,
+  alternates: {
+    canonical: "./",
+  },
+  openGraph: {
+    title: `${STRINGS.app.name} - ${STRINGS.app.tagline}`,
+    description: STRINGS.app.description,
+    url: baseUrl,
+    siteName: STRINGS.app.name,
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: `${STRINGS.app.name} - ${STRINGS.app.tagline}`,
+    description: STRINGS.app.description,
+  },
 };
 
 async function NavServerWrapper() {
@@ -34,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${lora.variable} ${sourceSans.variable}`} suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
         <a
           href="#main-content"

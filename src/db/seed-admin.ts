@@ -44,26 +44,26 @@ async function seedAdmin() {
           passwordHash,
           role: "admin",
           fullName,
-          mustChangePassword: true,
+          mustChangePassword: false,
           updatedAt: new Date(),
         })
         .where(eq(users.email, email));
-      console.log("✓ Cập nhật tài khoản Admin thành công (Yêu cầu đổi mật khẩu lần đầu: BẬT).");
+      console.log("✓ Cập nhật tài khoản Admin thành công (Vào thẳng trang quản trị).");
     } else {
       await db.insert(users).values({
         email,
         passwordHash,
         fullName,
         role: "admin",
-        mustChangePassword: true,
+        mustChangePassword: false,
       });
-      console.log("✓ Tạo mới tài khoản Admin thành công (Yêu cầu đổi mật khẩu lần đầu: BẬT).");
+      console.log("✓ Tạo mới tài khoản Admin thành công (Vào thẳng trang quản trị).");
     }
 
     console.log("--------------------------------------------------");
     console.log("✓ Hoàn thành seed tài khoản Admin!");
     console.log(`Đăng nhập bằng: ${email}`);
-    console.log("Sau khi đăng nhập, hệ thống sẽ tự động chuyển hướng sang trang đổi mật khẩu bắt buộc.");
+    console.log("Sau khi đăng nhập, hệ thống sẽ tự động chuyển thẳng vào trang quản trị /admin.");
     console.log("--------------------------------------------------");
   } catch (error) {
     console.error("Lỗi khi tạo tài khoản Admin:", error);

@@ -3,16 +3,16 @@
 import { useActionState, Suspense } from "react";
 import { loginAction } from "@/actions/auth";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { STRINGS } from "@/lib/constants/strings";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import { KeyRound, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const resetSuccess = searchParams.get("reset") === "thanh-cong";
-  const redirectParam = searchParams.get("redirect");
+  const redirectParam = searchParams.get("redirect") || "";
 
   const [state, formAction, isPending] = useActionState(loginAction, {
     success: false,
@@ -20,21 +20,18 @@ function LoginForm() {
 
   useEffect(() => {
     if (state.success && state.data?.redirectUrl) {
-      router.push(redirectParam || state.data.redirectUrl);
-      router.refresh();
+      window.location.href = state.data.redirectUrl;
     }
-  }, [state, router, redirectParam]);
+  }, [state]);
 
   return (
     <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border-light)] rounded-lg p-8 shadow-xs">
-      <div className="text-center mb-8">
-        <span className="inline-block px-3 py-1 text-xs font-medium tracking-wider uppercase bg-[var(--surface-raised)] text-[var(--navy)] rounded-full mb-3">
-          Học tập trung
-        </span>
+      <div className="text-center mb-6">
+        <OwlMascot variant="studious" size={72} className="mx-auto mb-2" />
         <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--ink)]">
           {STRINGS.auth.loginTitle}
         </h1>
-        <p className="mt-2 text-sm text-[var(--ink-secondary)]">
+        <p className="mt-1.5 text-xs sm:text-sm text-[var(--ink-secondary)]">
           {STRINGS.auth.loginSubtitle}
         </p>
       </div>
@@ -62,6 +59,7 @@ function LoginForm() {
       )}
 
       <form action={formAction} method="post" className="space-y-5">
+        <input type="hidden" name="redirect" value={redirectParam} />
         <div>
           <label
             htmlFor="login-email"
@@ -118,10 +116,14 @@ function LoginForm() {
 
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || state.success}
           className="w-full py-2.5 px-4 mt-2 rounded-md bg-[var(--navy)] hover:bg-[var(--navy-hover)] text-[#faf7f2] text-sm font-medium transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isPending ? "Đang xác thực..." : STRINGS.auth.loginButton}
+          {state.success
+            ? "Đang chuyển hướng..."
+            : isPending
+            ? "Đang xác thực..."
+            : STRINGS.auth.loginButton}
         </button>
       </form>
 

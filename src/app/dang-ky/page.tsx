@@ -3,35 +3,31 @@
 import { useActionState } from "react";
 import { registerAction } from "@/actions/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { STRINGS } from "@/lib/constants/strings";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import { KeyRound, Mail, User, AlertCircle } from "lucide-react";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState(registerAction, {
     success: false,
   });
 
   useEffect(() => {
     if (state.success && state.data?.redirectUrl) {
-      router.push(state.data.redirectUrl);
-      router.refresh();
+      window.location.href = state.data.redirectUrl;
     }
-  }, [state, router]);
+  }, [state]);
 
   return (
     <div className="min-h-[calc(100vh-10rem)] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border-light)] rounded-lg p-8 shadow-xs">
-        <div className="text-center mb-8">
-          <span className="inline-block px-3 py-1 text-xs font-medium tracking-wider uppercase bg-[var(--surface-raised)] text-[var(--navy)] rounded-full mb-3">
-            Gia nhập cộng đồng
-          </span>
+        <div className="text-center mb-6">
+          <OwlMascot variant="studious" size={72} className="mx-auto mb-2" />
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--ink)]">
             {STRINGS.auth.registerTitle}
           </h1>
-          <p className="mt-2 text-sm text-[var(--ink-secondary)]">
+          <p className="mt-1.5 text-xs sm:text-sm text-[var(--ink-secondary)]">
             {STRINGS.auth.registerSubtitle}
           </p>
         </div>
@@ -142,10 +138,14 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || state.success}
             className="w-full py-2.5 px-4 mt-2 rounded-md bg-[var(--navy)] hover:bg-[var(--navy-hover)] text-[#faf7f2] text-sm font-medium transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isPending ? "Đang xử lý..." : STRINGS.auth.registerButton}
+            {state.success
+              ? "Đang chuyển hướng..."
+              : isPending
+              ? "Đang xử lý..."
+              : STRINGS.auth.registerButton}
           </button>
         </form>
 

@@ -33,6 +33,7 @@ export async function loginAction(
 ): Promise<ActionResult<{ redirectUrl: string }>> {
   const rawEmail = formData.get("email")?.toString() || "";
   const rawPassword = formData.get("password")?.toString() || "";
+  const rawRedirect = formData.get("redirect")?.toString() || "";
 
   const parsed = loginSchema.safeParse({ email: rawEmail, password: rawPassword });
   if (!parsed.success) {
@@ -57,19 +58,45 @@ export async function loginAction(
       return { success: false, error: "Email hoặc mật khẩu không chính xác." };
     }
 
+    // Tự động gỡ cờ yêu cầu đổi mật khẩu lần đầu (nếu có) để admin/học viên vào thẳng trang chính
+    if (user.mustChangePassword) {
+      try {
+        await db
+          .update(users)
+          .set({ mustChangePassword: false, updatedAt: new Date() })
+          .where(eq(users.id, user.id));
+      } catch (updateErr) {
+        console.error("Không thể cập nhật cờ mustChangePassword:", updateErr);
+      }
+    }
+
     const sessionUser: SessionUser = {
       userId: user.id,
       email: user.email,
       fullName: user.fullName,
       role: user.role as "admin" | "learner",
-      mustChangePassword: user.mustChangePassword,
+      mustChangePassword: false,
     };
 
     await setSessionCookie(sessionUser);
 
-    let redirectUrl = user.role === "admin" ? "/admin" : "/chu-de";
-    if (user.mustChangePassword) {
-      redirectUrl = "/doi-mat-khau-lan-dau";
+    // Điều hướng: Admin vào thẳng trang quản trị (/admin), học viên vào thẳng trang chủ (/)
+    let redirectUrl = "/";
+    if (user.role === "admin") {
+      redirectUrl =
+        rawRedirect && rawRedirect.startsWith("/admin") ? rawRedirect : "/admin";
+    } else {
+      if (
+        rawRedirect &&
+        !rawRedirect.startsWith("/admin") &&
+        !rawRedirect.startsWith("/dang-nhap") &&
+        !rawRedirect.startsWith("/dang-ky") &&
+        !rawRedirect.startsWith("/api")
+      ) {
+        redirectUrl = rawRedirect;
+      } else {
+        redirectUrl = "/";
+      }
     }
 
     return { success: true, data: { redirectUrl } };
@@ -135,7 +162,7 @@ export async function registerAction(
 
     await setSessionCookie(sessionUser);
 
-    return { success: true, data: { redirectUrl: "/chu-de" } };
+    return { success: true, data: { redirectUrl: "/" } };
   } catch (err) {
     console.error("Register action error:", err);
     return { success: false, error: "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau." };
@@ -307,7 +334,7 @@ export async function firstLoginChangePasswordAction(
 
     return {
       success: true,
-      data: { redirectUrl: session.role === "admin" ? "/admin" : "/chu-de" },
+      data: { redirectUrl: session.role === "admin" ? "/admin" : "/" },
     };
   } catch (err) {
     console.error("First login change password error:", err);

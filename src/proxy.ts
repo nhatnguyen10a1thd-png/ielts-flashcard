@@ -7,7 +7,7 @@ const SECRET_KEY = new TextEncoder().encode(
   process.env.AUTH_SECRET || "fallback-secret-key-ielts-flashcard-at-least-32-chars-long"
 );
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Read session cookie
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 1. Force first-time password change if required
-  if (user?.mustChangePassword) {
+  if (user?.mustChangePassword && user.role !== "admin") {
     const isAllowedPath =
       pathname.startsWith("/doi-mat-khau-lan-dau") ||
       pathname.startsWith("/api/auth/first-login-change-password") ||
@@ -71,9 +71,10 @@ export async function middleware(request: NextRequest) {
     pathname === "/quen-mat-khau" ||
     pathname.startsWith("/dat-lai-mat-khau");
 
-  if (isAuthPage && user && !user.mustChangePassword) {
+  if (isAuthPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = user.role === "admin" ? "/admin" : "/chu-de";
+    url.search = "";
+    url.pathname = user.role === "admin" ? "/admin" : "/";
     return NextResponse.redirect(url);
   }
 

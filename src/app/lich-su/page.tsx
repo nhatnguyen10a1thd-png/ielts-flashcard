@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ProgressChart, ChartDataPoint } from "@/components/history/ProgressChart";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import {
   Award,
   History,
@@ -14,6 +15,7 @@ import {
   CheckCircle2,
   Calendar,
   Layers,
+  GraduationCap,
 } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -110,9 +112,10 @@ export default async function HistoryPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--border-light)]">
         <div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-[var(--surface-raised)] text-[var(--navy)] rounded-full mb-2">
-            Hồ sơ học tập
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-[var(--surface-raised)] border border-[var(--border-medium)] text-[var(--navy)] rounded-full mb-2">
+            <OwlMascot variant="badge" size={18} />
+            <span>Bảng vàng tiến độ • Cú Tri Thức</span>
+          </div>
           <h1 className="text-3xl font-serif font-bold text-[var(--ink)]">
             Lịch sử & Biểu đồ Tiến bộ
           </h1>
@@ -123,9 +126,9 @@ export default async function HistoryPage() {
 
         <Link
           href="/kiem-tra"
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-xs font-semibold transition-colors shadow-xs self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-xs font-semibold transition-all shadow-xs hover:-translate-y-0.5 active:translate-y-0 self-start sm:self-auto"
         >
-          <Brain className="w-4 h-4" />
+          <Brain className="w-4 h-4 text-[var(--amber)]" />
           <span>Làm bài kiểm tra mới</span>
         </Link>
       </div>
@@ -209,8 +212,22 @@ export default async function HistoryPage() {
         </div>
 
         {attempts.length === 0 ? (
-          <div className="p-10 text-center text-xs text-[var(--ink-muted)]">
-            Bạn chưa làm bài kiểm tra nào. Hãy nhấn vào nút &quot;Làm bài kiểm tra mới&quot; ở trên để bắt đầu thử sức.
+          <div className="p-12 text-center space-y-4">
+            <OwlMascot variant="reading" size={80} className="mx-auto" />
+            <h3 className="font-serif font-bold text-base text-[var(--ink)]">
+              Chưa có dữ liệu bài kiểm tra nào
+            </h3>
+            <p className="text-xs text-[var(--ink-secondary)] max-w-sm mx-auto">
+              Cú Tri Thức đang đợi ghi nhận thành tích đầu tiên của bạn. Hãy hoàn thành 1 bài kiểm tra để theo dõi đường cong ghi nhớ nhé!
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/kiem-tra"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--navy)] text-white hover:bg-[var(--navy-hover)] transition-colors"
+              >
+                <span>Bắt đầu bài kiểm tra ngay</span>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">

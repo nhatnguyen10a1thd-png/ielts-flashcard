@@ -6,9 +6,19 @@
 export const STRINGS = {
   app: {
     name: "IELTS Flashcard",
-    tagline: "Học từ vựng tinh gọn & chuẩn mực",
-    description: "Hệ thống ghi nhớ từ vựng tiếng Anh chuyên sâu bằng phương pháp Flashcard",
-    footerText: "Thiết kế chuẩn mực cho người học tập trung.",
+    mascotName: "Cú Tri Thức",
+    tagline: "Đồng hành cùng Cú Tri Thức chinh phục IELTS",
+    description: "Hệ thống ghi nhớ từ vựng tiếng Anh chuyên sâu bằng phương pháp Flashcard thông minh",
+    footerText: "Được chắp cánh bởi Cú Tri Thức — Chăm chỉ mỗi ngày, vững vàng IELTS.",
+  },
+  owl: {
+    greeting: "Cú Tri Thức chào bạn!",
+    studyPrompt: "Hôm nay bạn muốn tích lũy thêm bao nhiêu từ vựng?",
+    dailyQuote: "Sự kiên trì của loài cú trong đêm chính là bí quyết đạt điểm cao trong kỳ thi.",
+    proctorNote: "Cú Giám Thị đã chuẩn bị bộ đề ngẫu nhiên theo chuẩn đề thi.",
+    cheerHalfway: "Tuyệt vời! Bạn đã đi được một nửa chặng đường rồi đấy!",
+    cheerFinish: "Xuất sắc! Cú trao bạn huy hiệu hoàn thành buổi học hôm nay!",
+    streakEncourage: "Chăm chỉ mỗi ngày, kiến thức sẽ đọng lại sâu sắc.",
   },
   nav: {
     home: "Trang chủ",

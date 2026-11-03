@@ -3,6 +3,7 @@ import { topics, words, userWordProgress } from "@/db/schema";
 import { sql, eq, and, isNull, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
 import Link from "next/link";
+import { OwlMascot } from "@/components/owl/OwlMascot";
 import {
   BookOpen,
   Brain,
@@ -11,6 +12,7 @@ import {
   ArrowRight,
   CheckCircle2,
   FolderKanban,
+  GraduationCap,
 } from "lucide-react";
 
 interface PageProps {
@@ -78,9 +80,10 @@ export default async function TopicsPage({ searchParams }: PageProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[var(--border-light)]">
         <div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-[var(--surface-raised)] text-[var(--navy)] rounded-full mb-2">
-            Học phần từ vựng
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-[var(--surface-raised)] text-[var(--navy)] rounded-full mb-2">
+            <OwlMascot variant="badge" size={18} />
+            <span>Học phần từ vựng • Cú Tri Thức</span>
+          </div>
           <h1 className="text-3xl font-serif font-bold text-[var(--ink)]">
             Danh mục Bộ Từ vựng
           </h1>
@@ -96,7 +99,7 @@ export default async function TopicsPage({ searchParams }: PageProps) {
             name="q"
             defaultValue={searchQuery}
             placeholder="Tìm kiếm chủ đề..."
-            className="w-full pl-9 pr-3 py-2 text-xs bg-[var(--surface)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)]"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-[var(--surface)] border border-[var(--border-medium)] rounded-lg text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)]"
           />
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--ink-muted)]">
             <Search className="w-3.5 h-3.5" />
@@ -106,8 +109,26 @@ export default async function TopicsPage({ searchParams }: PageProps) {
 
       {/* Grid of Topics */}
       {topicRows.length === 0 ? (
-        <div className="p-12 text-center rounded-lg bg-[var(--surface)] border border-[var(--border-light)] text-xs text-[var(--ink-muted)]">
-          {searchQuery ? "Không tìm thấy chủ đề nào phù hợp với từ khoá tìm kiếm." : "Chưa có chủ đề nào được công khai."}
+        <div className="p-12 text-center rounded-2xl bg-[var(--surface)] border border-[var(--border-light)] space-y-4 shadow-xs">
+          <OwlMascot variant="thinking" size={90} className="mx-auto" />
+          <h3 className="font-serif font-bold text-lg text-[var(--ink)]">
+            {searchQuery
+              ? `Cú chưa tìm thấy chủ đề nào khớp với "${searchQuery}"`
+              : "Chưa có chủ đề nào được công khai."}
+          </h3>
+          <p className="text-xs text-[var(--ink-secondary)] max-w-sm mx-auto">
+            Hãy thử tìm bằng từ khoá ngắn hơn hoặc bấm bên dưới để quay lại xem tất cả chủ đề.
+          </p>
+          {searchQuery && (
+            <div className="pt-2">
+              <Link
+                href="/chu-de"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] transition-colors"
+              >
+                <span>Xem toàn bộ chủ đề</span>
+              </Link>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,7 +140,7 @@ export default async function TopicsPage({ searchParams }: PageProps) {
             return (
               <div
                 key={topic.id}
-                className="group flex flex-col justify-between p-6 rounded-lg bg-[var(--surface)] border border-[var(--border-light)] hover:border-[var(--navy)]/40 hover:shadow-xs transition-all space-y-5"
+                className="group flex flex-col justify-between p-6 rounded-xl bg-[var(--surface)] border border-[var(--border-light)] hover:border-[var(--amber)]/60 hover:shadow-md transition-all space-y-5"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">

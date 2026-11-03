@@ -47,13 +47,13 @@ async function seedFirebaseAdmin() {
         email: adminEmail,
         fullName: adminFullName,
         role: "admin",
-        mustChangePassword: true,
+        mustChangePassword: false,
         updatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
 
-    console.log(`✓ Đã cập nhật bản ghi Admin trong collection 'users' với mustChangePassword = true`);
+    console.log(`✓ Đã cập nhật bản ghi Admin trong collection 'users' với mustChangePassword = false`);
     console.log("\n==================================================================");
     console.log("🎉 KHỞI TẠO ADMIN FIREBASE THÀNH CÔNG!");
     console.log(`- Email: ${adminEmail}`);
