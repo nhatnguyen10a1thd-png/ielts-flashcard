@@ -138,6 +138,19 @@ h1, h2, h3, h4, .font-serif {
   animation: owlFloat 4s ease-in-out infinite;
 }
 
+/* Accessibility: Giảm chuyển động cho người dùng nhạy cảm thị giác */
+@media (prefers-reduced-motion: reduce) {
+  .animate-owl-float {
+    animation: none !important;
+  }
+  .transform-style-3d {
+    transition-duration: 0.05s !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Smooth custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

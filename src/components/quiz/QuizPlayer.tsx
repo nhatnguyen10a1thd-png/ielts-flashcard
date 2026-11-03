@@ -403,7 +403,14 @@ export function QuizPlayer({
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden">
+      <div
+        role="progressbar"
+        aria-valuenow={currentIndex + 1}
+        aria-valuemin={1}
+        aria-valuemax={questions.length}
+        aria-label="Tiến độ bài kiểm tra"
+        className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden"
+      >
         <div
           className="h-full bg-gradient-to-r from-[var(--navy)] to-[var(--amber)] transition-all duration-300"
           style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
@@ -414,8 +421,18 @@ export function QuizPlayer({
       {mode === "flip_card" && currentQ && (
         <div className="space-y-6">
           <div
+            role="button"
+            tabIndex={0}
+            aria-label={isCardFlipped ? "Lật lại mặt trước câu hỏi" : "Lật xem đáp án của câu hỏi"}
+            aria-expanded={isCardFlipped}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setIsCardFlipped(!isCardFlipped);
+              }
+            }}
             onClick={() => setIsCardFlipped(!isCardFlipped)}
-            className="p-10 rounded-xl bg-[var(--surface)] border border-[var(--border-medium)] shadow-sm text-center min-h-[260px] flex flex-col justify-between cursor-pointer select-none"
+            className="p-10 rounded-xl bg-[var(--surface)] border border-[var(--border-medium)] shadow-sm text-center min-h-[260px] flex flex-col justify-between cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)]"
           >
             <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)]">
               {isCardFlipped ? "Đáp án" : "Từ vựng"}
@@ -501,7 +518,7 @@ export function QuizPlayer({
           </div>
 
           {/* 4 Options Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div role="radiogroup" aria-label="Các lựa chọn đáp án" className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {currentQ.options?.map((option, idx) => {
               const letter = String.fromCharCode(65 + idx); // A, B, C, D
               let btnStyle = "border-[var(--border-medium)] bg-[var(--surface)] text-[var(--ink)] hover:bg-[var(--surface-raised)]";
@@ -519,9 +536,12 @@ export function QuizPlayer({
               return (
                 <button
                   key={idx}
+                  role="radio"
+                  aria-checked={selectedOption === option}
+                  aria-label={`Đáp án ${letter}: ${option}`}
                   disabled={isAnswerRevealed}
                   onClick={() => handleOptionSelect(option)}
-                  className={`p-4 rounded-lg border text-left text-xs transition-all shadow-xs flex items-center gap-3 ${btnStyle}`}
+                  className={`p-4 rounded-lg border text-left text-xs transition-all shadow-xs flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)] ${btnStyle}`}
                 >
                   <span className="w-6 h-6 rounded-full border border-current flex items-center justify-center font-bold text-[11px] shrink-0">
                     {letter}
@@ -553,7 +573,11 @@ export function QuizPlayer({
 
           {!typingFeedback ? (
             <form onSubmit={handleTypingSubmit} className="space-y-4">
+              <label htmlFor="quiz-typing-input" className="sr-only">
+                Nhập từ vựng tiếng Anh tương ứng
+              </label>
               <input
+                id="quiz-typing-input"
                 type="text"
                 autoFocus
                 value={typingInput}
@@ -570,7 +594,7 @@ export function QuizPlayer({
               </button>
             </form>
           ) : (
-            <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="space-y-4 animate-in fade-in duration-200" role="status" aria-live="polite">
               <div
                 className={`p-4 rounded-lg border text-center space-y-2 ${
                   typingFeedback.isCorrect

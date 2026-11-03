@@ -375,6 +375,7 @@ export function FlashcardPlayer({
               setCurrentIndex(0);
               setIsFlipped(false);
             }}
+            aria-pressed={filterUnknownOnly}
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors ${
               filterUnknownOnly
                 ? "border-[var(--burgundy)] bg-[var(--wine-light)] text-[var(--burgundy)] font-semibold"
@@ -388,6 +389,7 @@ export function FlashcardPlayer({
 
           <button
             onClick={toggleAutoPronounce}
+            aria-pressed={autoPronounce}
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors ${
               autoPronounce
                 ? "border-[var(--navy)] bg-[var(--surface-raised)] text-[var(--navy)] font-semibold"
@@ -411,7 +413,14 @@ export function FlashcardPlayer({
             Tiến độ: <strong className="text-[var(--sage)]">{progressPercent}%</strong>
           </span>
         </div>
-        <div className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden">
+        <div
+          role="progressbar"
+          aria-valuenow={progressPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Tiến độ học chủ đề"
+          className="w-full h-2 rounded-full bg-[var(--border-medium)] overflow-hidden"
+        >
           <div
             className="h-full bg-gradient-to-r from-[var(--navy)] to-[var(--amber)] transition-all duration-300"
             style={{ width: `${((currentIndex + 1) / activeWords.length) * 100}%` }}
@@ -419,9 +428,19 @@ export function FlashcardPlayer({
         </div>
       </div>
 
-      {/* 3D FLASHCARD with Hardware Acceleration */}
+      {/* 3D FLASHCARD with Hardware Acceleration & Accessible Keyboard Control */}
       <div
-        className="perspective-1000 select-none cursor-pointer card-touch-surface"
+        role="button"
+        tabIndex={0}
+        aria-label={isFlipped ? "Lật lại mặt trước của thẻ từ vựng" : "Lật sang mặt sau để xem nghĩa của từ vựng"}
+        aria-expanded={isFlipped}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleFlip();
+          }
+        }}
+        className="perspective-1000 select-none cursor-pointer card-touch-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)] rounded-2xl"
         onClick={handleFlip}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -450,8 +469,9 @@ export function FlashcardPlayer({
                     e.stopPropagation();
                     playCurrentWordPronunciation();
                   }}
-                  className="p-2 rounded-full hover:bg-[var(--surface-raised)] text-[var(--navy)] transition-colors"
+                  className="p-2 rounded-full hover:bg-[var(--surface-raised)] text-[var(--navy)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)]"
                   title="Nghe phát âm (R)"
+                  aria-label="Nghe phát âm tiếng Anh (Phím R)"
                 >
                   <Volume2 className="w-5 h-5" />
                 </button>
@@ -514,8 +534,9 @@ export function FlashcardPlayer({
                   e.stopPropagation();
                   playCurrentWordPronunciation();
                 }}
-                className="p-2 rounded-full hover:bg-[var(--surface-raised)] text-[var(--navy)] transition-colors"
+                className="p-2 rounded-full hover:bg-[var(--surface-raised)] text-[var(--navy)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--navy)]"
                 title="Nghe phát âm (R)"
+                aria-label="Nghe phát âm tiếng Anh (Phím R)"
               >
                 <Volume2 className="w-5 h-5" />
               </button>

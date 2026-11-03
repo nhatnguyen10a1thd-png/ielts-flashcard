@@ -179,6 +179,7 @@ export function QuizSetup({
           <button
             type="button"
             onClick={() => setMode("multiple_choice")}
+            aria-pressed={mode === "multiple_choice"}
             className={`p-4 rounded-lg border text-left space-y-2 transition-all ${
               mode === "multiple_choice"
                 ? "border-[var(--navy)] bg-[var(--surface-raised)] ring-1 ring-[var(--navy)]"
@@ -200,6 +201,7 @@ export function QuizSetup({
           <button
             type="button"
             onClick={() => setMode("typing")}
+            aria-pressed={mode === "typing"}
             className={`p-4 rounded-lg border text-left space-y-2 transition-all ${
               mode === "typing"
                 ? "border-[var(--navy)] bg-[var(--surface-raised)] ring-1 ring-[var(--navy)]"
@@ -221,6 +223,7 @@ export function QuizSetup({
           <button
             type="button"
             onClick={() => setMode("flip_card")}
+            aria-pressed={mode === "flip_card"}
             className={`p-4 rounded-lg border text-left space-y-2 transition-all ${
               mode === "flip_card"
                 ? "border-[var(--navy)] bg-[var(--surface-raised)] ring-1 ring-[var(--navy)]"
