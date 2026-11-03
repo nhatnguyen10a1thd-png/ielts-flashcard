@@ -40,22 +40,33 @@ function LoginForm() {
       </div>
 
       {resetSuccess && (
-        <div className="mb-6 p-3 bg-[var(--sage-light)] border border-[var(--sage)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--sage)] font-medium">
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-6 p-3 bg-[var(--sage-light)] border border-[var(--sage)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--sage)] font-medium"
+        >
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>Mật khẩu của bạn đã được cập nhật thành công. Vui lòng đăng nhập lại.</span>
         </div>
       )}
 
       {state.error && (
-        <div className="mb-6 p-3 bg-[var(--wine-light)] border border-[var(--burgundy)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--burgundy)] font-medium">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="mb-6 p-3 bg-[var(--wine-light)] border border-[var(--burgundy)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--burgundy)] font-medium"
+        >
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{state.error}</span>
         </div>
       )}
 
-      <form action={formAction} className="space-y-5">
+      <form action={formAction} method="post" className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5">
+          <label
+            htmlFor="login-email"
+            className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5"
+          >
             {STRINGS.auth.emailLabel}
           </label>
           <div className="relative">
@@ -63,9 +74,11 @@ function LoginForm() {
               <Mail className="w-4 h-4" />
             </span>
             <input
+              id="login-email"
               type="email"
               name="email"
               required
+              autoComplete="email"
               placeholder={STRINGS.auth.emailPlaceholder}
               className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
             />
@@ -74,7 +87,10 @@ function LoginForm() {
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]">
+            <label
+              htmlFor="login-password"
+              className="text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]"
+            >
               {STRINGS.auth.passwordLabel}
             </label>
             <Link
@@ -89,9 +105,11 @@ function LoginForm() {
               <KeyRound className="w-4 h-4" />
             </span>
             <input
+              id="login-password"
               type="password"
               name="password"
               required
+              autoComplete="current-password"
               placeholder={STRINGS.auth.passwordPlaceholder}
               className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
             />

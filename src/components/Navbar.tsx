@@ -101,7 +101,7 @@ export function Navbar({ user }: NavbarProps) {
                   <strong className="text-[var(--ink)]">{user.fullName}</strong>
                 </span>
 
-                <form action={logoutAction}>
+                <form action={logoutAction} method="post">
                   <button
                     type="submit"
                     className="flex items-center gap-1 text-xs text-[var(--ink-secondary)] hover:text-[var(--burgundy)] transition-colors py-1.5 px-2 rounded-md hover:bg-[var(--surface-raised)]"
@@ -135,6 +135,8 @@ export function Navbar({ user }: NavbarProps) {
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-menu"
               className="p-2 rounded-md text-[var(--ink-secondary)] hover:bg-[var(--surface-raised)]"
               aria-label="Mở menu điều hướng"
             >
@@ -146,7 +148,7 @@ export function Navbar({ user }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[var(--border-light)] bg-[var(--surface)] px-4 pt-2 pb-4 space-y-2">
+        <div id="mobile-navigation-menu" className="md:hidden border-b border-[var(--border-light)] bg-[var(--surface)] px-4 pt-2 pb-4 space-y-2">
           <Link
             href="/chu-de"
             onClick={() => setMobileMenuOpen(false)}
@@ -190,7 +192,7 @@ export function Navbar({ user }: NavbarProps) {
                 <span className="text-sm text-[var(--ink)] font-medium">
                   {user.fullName} ({user.role === "admin" ? "Quản trị" : "Học viên"})
                 </span>
-                <form action={logoutAction}>
+                <form action={logoutAction} method="post">
                   <button
                     type="submit"
                     className="text-sm text-[var(--burgundy)] font-medium hover:underline flex items-center gap-1"

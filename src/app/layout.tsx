@@ -36,10 +36,16 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${lora.variable} ${sourceSans.variable}`} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--navy)] focus:text-[#faf7f2] focus:rounded-md focus:shadow-md text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--navy)]"
+        >
+          Chuyển đến nội dung chính
+        </a>
         <Suspense fallback={<div className="h-16 border-b border-[var(--border-light)]" />}>
           <NavServerWrapper />
         </Suspense>
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <footer className="border-t border-[var(--border-light)] py-6 text-center text-xs text-[var(--ink-muted)]">
           <div className="max-w-7xl mx-auto px-4">
             <p className="font-serif italic">{STRINGS.app.footerText}</p>

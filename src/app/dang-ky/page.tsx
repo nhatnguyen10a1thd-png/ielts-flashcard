@@ -37,15 +37,22 @@ export default function RegisterPage() {
         </div>
 
         {state.error && (
-          <div className="mb-6 p-3 bg-[var(--wine-light)] border border-[var(--burgundy)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--burgundy)] font-medium">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="mb-6 p-3 bg-[var(--wine-light)] border border-[var(--burgundy)]/30 rounded-md flex items-center gap-2.5 text-xs text-[var(--burgundy)] font-medium"
+          >
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{state.error}</span>
           </div>
         )}
 
-        <form action={formAction} className="space-y-4">
+        <form action={formAction} method="post" className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5">
+            <label
+              htmlFor="register-fullname"
+              className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5"
+            >
               {STRINGS.auth.fullNameLabel}
             </label>
             <div className="relative">
@@ -53,9 +60,11 @@ export default function RegisterPage() {
                 <User className="w-4 h-4" />
               </span>
               <input
+                id="register-fullname"
                 type="text"
                 name="fullName"
                 required
+                autoComplete="name"
                 placeholder={STRINGS.auth.fullNamePlaceholder}
                 className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
               />
@@ -63,7 +72,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5">
+            <label
+              htmlFor="register-email"
+              className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5"
+            >
               {STRINGS.auth.emailLabel}
             </label>
             <div className="relative">
@@ -71,9 +83,11 @@ export default function RegisterPage() {
                 <Mail className="w-4 h-4" />
               </span>
               <input
+                id="register-email"
                 type="email"
                 name="email"
                 required
+                autoComplete="email"
                 placeholder={STRINGS.auth.emailPlaceholder}
                 className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
               />
@@ -81,7 +95,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5">
+            <label
+              htmlFor="register-password"
+              className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5"
+            >
               {STRINGS.auth.passwordLabel}
             </label>
             <div className="relative">
@@ -89,9 +106,11 @@ export default function RegisterPage() {
                 <KeyRound className="w-4 h-4" />
               </span>
               <input
+                id="register-password"
                 type="password"
                 name="password"
                 required
+                autoComplete="new-password"
                 placeholder="Tối thiểu 8 ký tự, có chữ và số"
                 className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
               />
@@ -99,7 +118,10 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5">
+            <label
+              htmlFor="register-confirm-password"
+              className="block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)] mb-1.5"
+            >
               {STRINGS.auth.confirmPasswordLabel}
             </label>
             <div className="relative">
@@ -107,9 +129,11 @@ export default function RegisterPage() {
                 <KeyRound className="w-4 h-4" />
               </span>
               <input
+                id="register-confirm-password"
                 type="password"
                 name="confirmPassword"
                 required
+                autoComplete="new-password"
                 placeholder="Nhập lại mật khẩu vừa đặt"
                 className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--surface-raised)] border border-[var(--border-medium)] rounded-md text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--navy)] focus:border-[var(--navy)] transition-colors"
               />
