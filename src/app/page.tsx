@@ -6,26 +6,35 @@ import { topics, words, users } from "@/db/schema";
 import { sql, isNull, eq } from "drizzle-orm";
 import { ArrowRight, BookOpen, Brain, Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const user = await getSession();
 
-  // Fetch quick public statistics
-  const [topicCount] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(topics)
-    .where(andTopicsActive());
+  // Fetch quick public statistics with fallback
+  let topicsTotal = 0;
+  let wordsTotal = 0;
+  let learnersTotal = 0;
 
-  const [wordCount] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(words);
+  try {
+    const [topicCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(topics)
+      .where(isNull(topics.deletedAt));
+    topicsTotal = Number(topicCount?.count || 0);
 
-  const [learnerCount] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(users)
-    .where(eq(users.role, "learner"));
+    const [wordCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(words);
+    wordsTotal = Number(wordCount?.count || 0);
 
-  function andTopicsActive() {
-    return isNull(topics.deletedAt);
+    const [learnerCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.role, "learner"));
+    learnersTotal = Number(learnerCount?.count || 0);
+  } catch (err) {
+    console.warn("Could not fetch home statistics:", err);
   }
 
   return (
@@ -88,7 +97,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-lg border border-[var(--border-light)] bg-[var(--surface)] text-center shadow-xs">
           <div className="p-4 border-b md:border-b-0 md:border-r border-[var(--border-light)]">
             <span className="block text-3xl sm:text-4xl font-serif font-bold text-[var(--navy)]">
-              {Number(topicCount?.count || 0).toLocaleString("vi-VN")}
+              {topicsTotal.toLocaleString("vi-VN")}
             </span>
             <span className="mt-1 block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]">
               Chủ đề học tập
@@ -97,7 +106,7 @@ export default async function HomePage() {
 
           <div className="p-4 border-b md:border-b-0 md:border-r border-[var(--border-light)]">
             <span className="block text-3xl sm:text-4xl font-serif font-bold text-[var(--burgundy)]">
-              {Number(wordCount?.count || 0).toLocaleString("vi-VN")}
+              {wordsTotal.toLocaleString("vi-VN")}
             </span>
             <span className="mt-1 block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]">
               Từ vựng chọn lọc
@@ -106,7 +115,7 @@ export default async function HomePage() {
 
           <div className="p-4">
             <span className="block text-3xl sm:text-4xl font-serif font-bold text-[var(--sage)]">
-              {Number(learnerCount?.count || 0).toLocaleString("vi-VN")}
+              {learnersTotal.toLocaleString("vi-VN")}
             </span>
             <span className="mt-1 block text-xs font-semibold uppercase tracking-wider text-[var(--ink-secondary)]">
               Học viên đã tham gia

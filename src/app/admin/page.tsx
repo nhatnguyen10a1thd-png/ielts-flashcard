@@ -13,39 +13,63 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
-  // Statistics
-  const [activeTopics] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(topics)
-    .where(isNull(topics.deletedAt));
+  // Statistics with graceful fallback
+  let activeTopicsCount = 0;
+  let totalWordsCount = 0;
+  let totalLearnersCount = 0;
+  let recentImports: Array<{
+    id: string;
+    fileName: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    totalRows: number;
+    addedRows: number;
+    skippedRows: number;
+    errorRows: number;
+    createdAt: Date;
+    topicName: string | null;
+  }> = [];
 
-  const [totalWords] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(words);
+  try {
+    const [activeTopics] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(topics)
+      .where(isNull(topics.deletedAt));
+    activeTopicsCount = Number(activeTopics?.count || 0);
 
-  const [totalLearners] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(users)
-    .where(eq(users.role, "learner"));
+    const [totalWords] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(words);
+    totalWordsCount = Number(totalWords?.count || 0);
 
-  // Recent import jobs
-  const recentImports = await db
-    .select({
-      id: importJobs.id,
-      fileName: importJobs.fileName,
-      status: importJobs.status,
-      totalRows: importJobs.totalRows,
-      addedRows: importJobs.addedRows,
-      skippedRows: importJobs.skippedRows,
-      errorRows: importJobs.errorRows,
-      createdAt: importJobs.createdAt,
-      topicName: topics.name,
-    })
-    .from(importJobs)
-    .leftJoin(topics, eq(importJobs.topicId, topics.id))
-    .orderBy(desc(importJobs.createdAt))
-    .limit(5);
+    const [totalLearners] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.role, "learner"));
+    totalLearnersCount = Number(totalLearners?.count || 0);
+
+    const imports = await db
+      .select({
+        id: importJobs.id,
+        fileName: importJobs.fileName,
+        status: importJobs.status,
+        totalRows: importJobs.totalRows,
+        addedRows: importJobs.addedRows,
+        skippedRows: importJobs.skippedRows,
+        errorRows: importJobs.errorRows,
+        createdAt: importJobs.createdAt,
+        topicName: topics.name,
+      })
+      .from(importJobs)
+      .leftJoin(topics, eq(importJobs.topicId, topics.id))
+      .orderBy(desc(importJobs.createdAt))
+      .limit(5);
+    recentImports = imports;
+  } catch (err) {
+    console.warn("Could not fetch admin statistics:", err);
+  }
 
   return (
     <div className="space-y-8">
@@ -61,7 +85,7 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
           <p className="mt-3 text-3xl font-serif font-bold text-[var(--navy)]">
-            {Number(activeTopics?.count || 0).toLocaleString("vi-VN")}
+            {activeTopicsCount.toLocaleString("vi-VN")}
           </p>
           <div className="mt-3 flex items-center justify-between text-xs text-[var(--ink-muted)]">
             <span>Quản lý danh mục từ</span>
@@ -85,7 +109,7 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
           <p className="mt-3 text-3xl font-serif font-bold text-[var(--burgundy)]">
-            {Number(totalWords?.count || 0).toLocaleString("vi-VN")}
+            {totalWordsCount.toLocaleString("vi-VN")}
           </p>
           <div className="mt-3 flex items-center justify-between text-xs text-[var(--ink-muted)]">
             <span>Toàn bộ cơ sở dữ liệu</span>
@@ -109,7 +133,7 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
           <p className="mt-3 text-3xl font-serif font-bold text-[var(--sage)]">
-            {Number(totalLearners?.count || 0).toLocaleString("vi-VN")}
+            {totalLearnersCount.toLocaleString("vi-VN")}
           </p>
           <div className="mt-3 flex items-center justify-between text-xs text-[var(--ink-muted)]">
             <span>Tài khoản tự đăng ký</span>

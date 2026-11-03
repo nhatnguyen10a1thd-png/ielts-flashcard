@@ -17,6 +17,8 @@ interface PageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function QuizPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const preselectedTopicId = params.topic || undefined;

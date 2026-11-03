@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   description: "Theo dõi tiến độ học tập và biểu đồ điểm số các bài kiểm tra từ vựng.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function HistoryPage() {
   const session = await getSession();
 

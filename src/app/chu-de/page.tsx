@@ -19,6 +19,8 @@ interface PageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function TopicsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const searchQuery = params.q?.trim() || "";

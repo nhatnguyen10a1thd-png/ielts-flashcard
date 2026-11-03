@@ -10,13 +10,20 @@ declare global {
   var __dbPool: Pool | undefined;
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+const useSsl =
+  connectionString.includes("sslmode=require") ||
+  connectionString.includes("neon.tech") ||
+  connectionString.includes("supabase.co");
+
 const pool =
   global.__dbPool ||
   new Pool({
     connectionString,
-    max: 20,
+    max: isProduction ? 10 : 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
   });
 
 if (process.env.NODE_ENV !== "production") {

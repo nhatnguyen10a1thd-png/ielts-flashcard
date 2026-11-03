@@ -3,6 +3,8 @@ import { importJobs, topics, users } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Download, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminImportHistoryPage() {
   const jobs = await db
     .select({

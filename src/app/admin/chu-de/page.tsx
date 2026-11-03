@@ -3,6 +3,8 @@ import { topics, words } from "@/db/schema";
 import { sql, eq, desc } from "drizzle-orm";
 import { TopicManager } from "./TopicManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminTopicsPage() {
   // Query all topics (including soft-deleted) with count of words
   const rows = await db
