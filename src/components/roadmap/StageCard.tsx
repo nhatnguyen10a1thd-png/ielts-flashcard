@@ -157,29 +157,61 @@ export function StageCard({ stage, type, isFirst, isLast }: StageCardProps) {
 
             {/* Vocab Topics */}
             {type === "vocabulary" && stage.topics && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {stage.topics.map((t) => (
-                  <div
-                    key={t.id}
-                    className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border-light)] shadow-2xs hover:border-[var(--amber)] transition-all"
-                  >
-                    <div className="space-y-1">
-                      <div className="font-medium text-sm text-[var(--ink)]">
-                        {t.name}
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {stage.topics.map((t) => {
+                    const percent = t.wordCount > 0 ? Math.round((t.knownCount / t.wordCount) * 100) : 0;
+                    const isAllKnown = t.wordCount > 0 && t.knownCount === t.wordCount;
+
+                    return (
+                      <div
+                        key={t.id}
+                        className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border-light)] shadow-2xs hover:border-[var(--amber)] transition-all space-y-3"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-0.5">
+                            <div className="font-semibold text-sm text-[var(--ink)] flex items-center gap-1.5">
+                              {isAllKnown && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
+                              <span>{t.name}</span>
+                            </div>
+                            <div className="text-xs text-[var(--ink-muted)]">
+                              Đã thuộc {t.knownCount} / {t.wordCount} từ ({percent}%)
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Progress mini-bar */}
+                        <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              isAllKnown ? "bg-emerald-500" : "bg-[var(--amber)]"
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+
+                        {/* 2 Learning action buttons */}
+                        <div className="flex items-center gap-2 pt-1">
+                          <Link
+                            href={`/chu-de/${t.slug}`}
+                            className="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded-lg text-xs font-semibold bg-[var(--navy)] text-white hover:bg-[var(--navy-hover)] transition-colors shadow-xs"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Học Flashcard</span>
+                          </Link>
+
+                          <Link
+                            href={`/kiem-tra?topics=${t.id}`}
+                            className="inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded-lg text-xs font-semibold border border-[var(--border-light)] bg-[var(--surface-raised)] text-[var(--ink)] hover:bg-[var(--surface-raised)]/80 transition-colors"
+                            title="Luyện tập trắc nghiệm củng cố chủ đề này"
+                          >
+                            <span>Luyện tập</span>
+                          </Link>
+                        </div>
                       </div>
-                      <div className="text-xs text-[var(--ink-muted)]">
-                        {t.knownCount} / {t.wordCount} từ đã thuộc
-                      </div>
-                    </div>
-                    <Link
-                      href={`/chu-de/${t.slug}`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--surface-raised)] text-[var(--navy)] hover:bg-[var(--navy)] hover:text-white transition-colors"
-                    >
-                      <span>Học thẻ</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-                ))}
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -233,29 +265,68 @@ export function StageCard({ stage, type, isFirst, isLast }: StageCardProps) {
             )}
 
             {/* Milestone Test Section */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[var(--surface)] p-4 rounded-xl border border-[var(--border-light)]">
+            <div
+              className={`pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border ${
+                stage.isEligibleForMilestone
+                  ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800"
+                  : "bg-[var(--surface)] border-[var(--border-light)]"
+              }`}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[var(--amber)]/10 text-[var(--amber)] flex items-center justify-center">
-                  <FileCheck2 className="w-5 h-5" />
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                    stage.isEligibleForMilestone
+                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                  }`}
+                >
+                  {stage.isEligibleForMilestone ? (
+                    <Sparkles className="w-5 h-5 text-emerald-600" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-gray-500" />
+                  )}
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-[var(--ink)]">
-                    Bài thi Đánh giá Tốt nghiệp Chặng {stage.stageNumber}
+                  <div className="text-sm font-bold text-[var(--ink)] flex items-center gap-1.5">
+                    <span>Bài thi Đánh giá Tốt nghiệp Chặng {stage.stageNumber}</span>
+                    {stage.isEligibleForMilestone ? (
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-full">
+                        Đủ điều kiện
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                        Cần thuộc ≥ {stage.requiredKnownPercent}% từ vựng
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-[var(--ink-muted)]">
-                    Yêu cầu: Thuộc ≥ {stage.requiredKnownPercent}% từ vựng và đạt ≥{" "}
-                    {stage.requiredQuizScore}% điểm thi
+                    {stage.isEligibleForMilestone
+                      ? `Bạn đã đạt ${stage.progressPercent}% từ vựng thuộc. Hãy làm bài thi để tốt nghiệp chặng!`
+                      : `Hiện tại bạn đạt ${stage.progressPercent}%. Hãy học các chủ đề ở trên trước khi thi tốt nghiệp.`}
                   </div>
                 </div>
               </div>
 
-              <Link
-                href="/de-thi"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[var(--navy)] text-white hover:bg-[var(--navy-hover)] transition-colors shadow-xs"
-              >
-                <span>Vào Trung tâm Đề thi</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="flex items-center gap-2 self-end sm:self-auto w-full sm:w-auto">
+                {stage.isEligibleForMilestone ? (
+                  <Link
+                    href="/de-thi"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs"
+                  >
+                    <span>Làm bài thi tốt nghiệp</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/de-thi"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium border border-[var(--border-light)] text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-raised)] transition-colors"
+                    title="Cho phép học viên giỏi thi vượt cấp ngay"
+                  >
+                    <span>Thi vượt cấp ngay</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         )}
