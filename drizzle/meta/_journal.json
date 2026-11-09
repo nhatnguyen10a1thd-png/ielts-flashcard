@@ -8,6 +8,20 @@
       "when": 1793603839539,
       "tag": "0000_cultured_black_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794228249248,
+      "tag": "0001_wandering_loa",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794232975598,
+      "tag": "0002_remarkable_vengeance",
+      "breakpoints": true
     }
   ]
 }
