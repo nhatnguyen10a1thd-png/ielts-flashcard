@@ -22,8 +22,11 @@ export const STRINGS = {
   },
   nav: {
     home: "Trang chủ",
+    roadmap: "Lộ trình học",
+    tests: "Đề thi thử",
     topics: "Bộ từ vựng",
     practice: "Luyện tập",
+    pets: "Thú cưng",
     history: "Lịch sử học",
     admin: "Quản trị viên",
     login: "Đăng nhập",

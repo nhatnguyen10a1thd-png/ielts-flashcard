@@ -8,13 +8,17 @@ import { ThemeToggle } from "./ThemeToggle";
 import { SessionUser } from "@/lib/auth/session";
 import { logoutAction } from "@/actions/auth";
 import { OwlMascot } from "@/components/owl/OwlMascot";
-import { BookOpen, LogOut, Menu, ShieldCheck, User as UserIcon, X } from "lucide-react";
+import { PetAvatar } from "@/components/pet/PetAvatar";
+import { StreakBadge } from "@/components/pet/StreakBadge";
+import { ActivePetSummary } from "@/actions/pet";
+import { BookOpen, Egg, Flame, LogOut, Menu, ShieldCheck, User as UserIcon, X } from "lucide-react";
 
 interface NavbarProps {
   user: SessionUser | null;
+  activePet?: ActivePetSummary | null;
 }
 
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user, activePet }: NavbarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -45,6 +49,28 @@ export function Navbar({ user }: NavbarProps) {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
             <Link
+              href="/lo-trinh"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive("/lo-trinh")
+                  ? "bg-[var(--surface-raised)] text-[var(--navy)] font-semibold"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+              }`}
+            >
+              {STRINGS.nav.roadmap}
+            </Link>
+
+            <Link
+              href="/de-thi"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive("/de-thi")
+                  ? "bg-[var(--surface-raised)] text-[var(--navy)] font-semibold"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+              }`}
+            >
+              {STRINGS.nav.tests}
+            </Link>
+
+            <Link
               href="/chu-de"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive("/chu-de")
@@ -66,6 +92,29 @@ export function Navbar({ user }: NavbarProps) {
                   }`}
                 >
                   {STRINGS.nav.practice}
+                </Link>
+
+                <Link
+                  href="/thu-cung"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive("/thu-cung")
+                      ? "bg-[var(--surface-raised)] text-[var(--navy)] font-semibold"
+                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+                  }`}
+                >
+                  {activePet ? (
+                    <PetAvatar species={activePet.species.id} stage={activePet.pet.stage} size={22} />
+                  ) : (
+                    <Egg className="w-4 h-4 text-amber-500" />
+                  )}
+                  <span>{STRINGS.nav.pets}</span>
+                  {activePet && (
+                    <StreakBadge
+                      count={activePet.pet.currentStreak}
+                      isTodayCompleted={activePet.isTodayCompleted}
+                      size="sm"
+                    />
+                  )}
                 </Link>
 
                 <Link
@@ -156,6 +205,22 @@ export function Navbar({ user }: NavbarProps) {
       {mobileMenuOpen && (
         <div id="mobile-navigation-menu" className="md:hidden border-b border-[var(--border-light)] bg-[var(--surface)] px-4 pt-2 pb-4 space-y-2">
           <Link
+            href="/lo-trinh"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+          >
+            {STRINGS.nav.roadmap}
+          </Link>
+
+          <Link
+            href="/de-thi"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+          >
+            {STRINGS.nav.tests}
+          </Link>
+
+          <Link
             href="/chu-de"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-md text-base font-medium text-[var(--ink)] hover:bg-[var(--surface-raised)]"
@@ -171,6 +236,27 @@ export function Navbar({ user }: NavbarProps) {
                 className="block px-3 py-2 rounded-md text-base font-medium text-[var(--ink)] hover:bg-[var(--surface-raised)]"
               >
                 {STRINGS.nav.practice}
+              </Link>
+              <Link
+                href="/thu-cung"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-[var(--ink)] hover:bg-[var(--surface-raised)]"
+              >
+                <div className="flex items-center gap-2">
+                  {activePet ? (
+                    <PetAvatar species={activePet.species.id} stage={activePet.pet.stage} size={24} />
+                  ) : (
+                    <Egg className="w-5 h-5 text-amber-500" />
+                  )}
+                  <span>{STRINGS.nav.pets}</span>
+                </div>
+                {activePet && (
+                  <StreakBadge
+                    count={activePet.pet.currentStreak}
+                    isTodayCompleted={activePet.isTodayCompleted}
+                    size="sm"
+                  />
+                )}
               </Link>
               <Link
                 href="/lich-su"

@@ -5,6 +5,9 @@ import { db } from "@/db";
 import { topics, words, users } from "@/db/schema";
 import { sql, isNull, eq } from "drizzle-orm";
 import { OwlMascot } from "@/components/owl/OwlMascot";
+import { PetAvatar } from "@/components/pet/PetAvatar";
+import { StreakBadge } from "@/components/pet/StreakBadge";
+import { getActivePetAction } from "@/actions/pet";
 import {
   ArrowRight,
   BookOpen,
@@ -15,6 +18,7 @@ import {
   GraduationCap,
   Award,
   Zap,
+  Egg,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +30,16 @@ export default async function HomePage() {
   let topicsTotal = 0;
   let wordsTotal = 0;
   let learnersTotal = 0;
+  let activePet = null;
+
+  if (user) {
+    try {
+      const petRes = await getActivePetAction();
+      activePet = petRes.data;
+    } catch (e) {
+      console.warn("Could not fetch active pet for home:", e);
+    }
+  }
 
   try {
     const [topicCount] = await db
@@ -56,22 +70,53 @@ export default async function HomePage() {
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-[var(--amber)]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
-          {/* Owl Mascot Hero Presentation */}
+          {/* Owl Mascot / Active Pet Hero Presentation */}
           <div className="flex flex-col items-center justify-center space-y-3">
-            <div className="relative">
-              <div className="p-3 rounded-full bg-[var(--surface)] border border-[var(--border-medium)] shadow-sm animate-owl-float">
-                <OwlMascot variant="studious" size={120} />
-              </div>
-              <span className="absolute -bottom-2 bg-[var(--amber)] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs tracking-wider uppercase">
-                {STRINGS.app.mascotName}
-              </span>
-            </div>
+            {activePet ? (
+              <>
+                <Link href="/thu-cung" className="group relative block" title="Xem phòng thú cưng">
+                  <div className="p-3 rounded-full bg-[var(--surface)] border border-[var(--border-medium)] shadow-sm animate-owl-float transition-transform group-hover:scale-105">
+                    <PetAvatar
+                      species={activePet.species.id}
+                      stage={activePet.pet.stage}
+                      size={120}
+                    />
+                  </div>
+                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--navy)] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs tracking-wider uppercase whitespace-nowrap">
+                    {activePet.pet.petName}
+                  </span>
+                </Link>
 
-            {/* Owl Speech Bubble */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--amber)]/40 bg-[var(--surface)] text-xs font-medium text-[var(--ink)] shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[var(--amber)] animate-ping" />
-              <span>&ldquo;{STRINGS.owl.dailyQuote}&rdquo;</span>
-            </div>
+                <div className="flex items-center gap-2">
+                  <StreakBadge
+                    count={activePet.pet.currentStreak}
+                    isTodayCompleted={activePet.isTodayCompleted}
+                    size="sm"
+                    showLabel
+                  />
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/40 bg-[var(--surface)] text-xs font-medium text-[var(--ink)] shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                    <span>&ldquo;{activePet.dialogue}&rdquo;</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="relative">
+                  <div className="p-3 rounded-full bg-[var(--surface)] border border-[var(--border-medium)] shadow-sm animate-owl-float">
+                    <OwlMascot variant="studious" size={120} />
+                  </div>
+                  <span className="absolute -bottom-2 bg-[var(--amber)] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs tracking-wider uppercase">
+                    {STRINGS.app.mascotName}
+                  </span>
+                </div>
+
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--amber)]/40 bg-[var(--surface)] text-xs font-medium text-[var(--ink)] shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-[var(--amber)] animate-ping" />
+                  <span>&ldquo;{STRINGS.owl.dailyQuote}&rdquo;</span>
+                </div>
+              </>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-[var(--ink)] tracking-tight leading-tight">
@@ -86,40 +131,31 @@ export default async function HomePage() {
             và hệ thống kiểm tra kiến thức đa dạng giúp bạn ghi nhớ vững chắc mỗi ngày.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-3.5">
             <Link
-              href="/chu-de"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-lg bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-sm font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+              href="/lo-trinh"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[var(--navy)] text-[#faf7f2] hover:bg-[var(--navy-hover)] text-sm font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
             >
               <GraduationCap className="w-4 h-4 text-[var(--amber)]" />
-              <span>Bắt đầu học ngay</span>
+              <span>Khám phá Lộ trình học</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            {!user ? (
-              <Link
-                href="/dang-ky"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg border border-[var(--border-medium)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--ink)] text-sm font-semibold transition-colors shadow-xs"
-              >
-                <span>Tạo tài khoản học viên</span>
-              </Link>
-            ) : user.role === "admin" ? (
-              <Link
-                href="/admin"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg border border-[var(--burgundy)] bg-[var(--wine-light)] text-[var(--burgundy)] text-sm font-semibold transition-colors shadow-xs"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Khu vực Quản trị</span>
-              </Link>
-            ) : (
-              <Link
-                href="/kiem-tra"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg border border-[var(--border-medium)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--ink)] text-sm font-semibold transition-colors shadow-xs"
-              >
-                <Brain className="w-4 h-4 text-[var(--navy)]" />
-                <span>Làm bài kiểm tra</span>
-              </Link>
-            )}
+            <Link
+              href="/de-thi"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-[var(--border-medium)] bg-[var(--surface)] hover:bg-[var(--surface-raised)] text-[var(--ink)] text-sm font-semibold transition-colors shadow-xs"
+            >
+              <Brain className="w-4 h-4 text-emerald-600" />
+              <span>Đề thi thử (Study4)</span>
+            </Link>
+
+            <Link
+              href="/chu-de"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-[var(--border-light)] bg-[var(--surface-raised)]/60 hover:bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink)] text-sm font-medium transition-colors"
+            >
+              <BookOpen className="w-4 h-4 text-[var(--amber)]" />
+              <span>Bộ từ vựng</span>
+            </Link>
           </div>
         </div>
       </section>
