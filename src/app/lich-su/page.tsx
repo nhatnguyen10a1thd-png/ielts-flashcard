@@ -6,6 +6,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ProgressChart, ChartDataPoint } from "@/components/history/ProgressChart";
 import { OwlMascot } from "@/components/owl/OwlMascot";
+import { PetAvatar } from "@/components/pet/PetAvatar";
+import { StreakBadge } from "@/components/pet/StreakBadge";
+import { getActivePetAction } from "@/actions/pet";
 import {
   Award,
   History,
@@ -16,6 +19,8 @@ import {
   Calendar,
   Layers,
   GraduationCap,
+  Flame,
+  ArrowRight,
 } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -31,6 +36,15 @@ export default async function HistoryPage() {
 
   if (!session) {
     redirect("/dang-nhap?redirect=/lich-su");
+  }
+
+  // Lấy active pet của học viên
+  let activePet = null;
+  try {
+    const petRes = await getActivePetAction();
+    activePet = petRes.data;
+  } catch (e) {
+    console.warn("Could not fetch active pet for history:", e);
   }
 
   // Lấy toàn bộ các bài thi của học viên
@@ -132,6 +146,48 @@ export default async function HistoryPage() {
           <span>Làm bài kiểm tra mới</span>
         </Link>
       </div>
+
+      {/* Pet & Streak Banner */}
+      {activePet && (
+        <div className="p-4 sm:p-5 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-[var(--surface)] to-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-3.5 text-center sm:text-left">
+            <PetAvatar
+              species={activePet.species.id}
+              stage={activePet.pet.stage}
+              size={54}
+            />
+            <div>
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <span className="font-serif font-bold text-sm text-[var(--ink)]">
+                  {activePet.pet.petName} ({activePet.species.name})
+                </span>
+                <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full">
+                  {activePet.stageDetail.label} {activePet.stageDetail.emoji}
+                </span>
+              </div>
+              <p className="text-xs text-[var(--ink-secondary)] mt-0.5">
+                {activePet.dialogue}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <StreakBadge
+              count={activePet.pet.currentStreak}
+              isTodayCompleted={activePet.isTodayCompleted}
+              size="md"
+              showLabel
+            />
+            <Link
+              href="/thu-cung"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--navy)] text-white hover:bg-[var(--navy-hover)] transition-colors shadow-2xs"
+            >
+              <span>Phòng thú cưng</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* 4 Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

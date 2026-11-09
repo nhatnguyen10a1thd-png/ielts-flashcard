@@ -5,6 +5,7 @@ import { userWordProgress, words, topics } from "@/db/schema";
 import { eq, and, sql, isNull } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
 import { revalidatePath } from "next/cache";
+import { recordDailyActivityAction } from "@/actions/pet";
 
 export interface StudyWordItem {
   id: string;
@@ -49,6 +50,12 @@ export async function toggleWordKnownAction(wordId: string, isKnown: boolean) {
       const row = res.rows[0];
 
       revalidatePath("/chu-de");
+
+      // Cập nhật hoạt động học và chuỗi streak cho thú cưng
+      recordDailyActivityAction("word", 1).catch((err) =>
+        console.error("Auto record study activity error:", err)
+      );
+
       return {
         success: true,
         isKnown: Boolean(row?.is_known),

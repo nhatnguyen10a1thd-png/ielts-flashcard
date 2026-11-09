@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { getSession } from "@/lib/auth/session";
+import { getActivePetAction } from "@/actions/pet";
 import { STRINGS } from "@/lib/constants/strings";
 import { Suspense } from "react";
 
@@ -43,7 +44,16 @@ export const metadata: Metadata = {
 
 async function NavServerWrapper() {
   const user = await getSession();
-  return <Navbar user={user} />;
+  let activePet = null;
+  if (user) {
+    try {
+      const petRes = await getActivePetAction();
+      activePet = petRes.data;
+    } catch (err) {
+      console.warn("Could not fetch active pet for navbar:", err);
+    }
+  }
+  return <Navbar user={user} activePet={activePet} />;
 }
 
 export default function RootLayout({

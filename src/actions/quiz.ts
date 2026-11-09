@@ -17,6 +17,7 @@ import {
   QuizWordCandidate,
 } from "@/lib/quiz/random-sampler";
 import { revalidatePath } from "next/cache";
+import { recordDailyActivityAction } from "@/actions/pet";
 
 export interface QuizQuestion {
   wordId: string;
@@ -331,6 +332,11 @@ export async function submitQuizAction(params: SubmitQuizParams) {
 
     revalidatePath("/lich-su");
     revalidatePath("/chu-de");
+
+    // Cập nhật hoạt động học và chuỗi streak cho thú cưng
+    recordDailyActivityAction("quiz", 1, timeSpentSeconds).catch((err) =>
+      console.error("Auto record quiz activity error:", err)
+    );
 
     return {
       success: true,

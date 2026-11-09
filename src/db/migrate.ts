@@ -29,16 +29,57 @@ async function runMigration() {
     await client.query(`CREATE EXTENSION IF NOT EXISTS "pg_trgm";`);
     await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
 
-    // Read generated migration sql
-    const sqlPath = path.join(process.cwd(), "drizzle", "0000_cultured_black_queen.sql");
-    const sqlContent = fs.readFileSync(sqlPath, "utf-8");
-    const statements = sqlContent.split("--> statement-breakpoint");
+    // Track applied migrations in a table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS "__app_migrations" (
+        "id" SERIAL PRIMARY KEY,
+        "name" VARCHAR(255) NOT NULL UNIQUE,
+        "applied_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `);
 
-    for (const statement of statements) {
-      const trimmed = statement.trim();
-      if (trimmed) {
-        await client.query(trimmed);
+    // Check if initial schema was already created before migration tracker was added
+    const initialCheck = await client.query(`SELECT to_regclass('public.users') as exists;`);
+    if (initialCheck.rows[0]?.exists) {
+      await client.query(`
+        INSERT INTO "__app_migrations" ("name")
+        VALUES ('0000_cultured_black_queen.sql')
+        ON CONFLICT ("name") DO NOTHING;
+      `);
+    }
+
+    const appliedRes = await client.query(`SELECT "name" FROM "__app_migrations";`);
+    const appliedSet = new Set(appliedRes.rows.map((r: { name: string }) => r.name));
+
+    // Read all generated migration sql files in order
+    const drizzleDir = path.join(process.cwd(), "drizzle");
+    const sqlFiles = fs
+      .readdirSync(drizzleDir)
+      .filter((file) => file.endsWith(".sql"))
+      .sort();
+
+    for (const sqlFile of sqlFiles) {
+      if (appliedSet.has(sqlFile)) {
+        console.log(`- Skipping already applied migration: ${sqlFile}`);
+        continue;
       }
+
+      console.log(`Executing migration file: ${sqlFile}`);
+      const sqlContent = fs.readFileSync(path.join(drizzleDir, sqlFile), "utf-8");
+      const statements = sqlContent.split("--> statement-breakpoint");
+
+      for (const statement of statements) {
+        const trimmed = statement.trim();
+        if (trimmed) {
+          await client.query(trimmed);
+        }
+      }
+
+      await client.query(
+        `INSERT INTO "__app_migrations" ("name") VALUES ($1) ON CONFLICT DO NOTHING;`,
+        [sqlFile]
+      );
+      console.log(`✓ Applied ${sqlFile}`);
     }
 
     // Add GIN trigram indexes for sub-millisecond search across millions of words

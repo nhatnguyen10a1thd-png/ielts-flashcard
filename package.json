@@ -12,6 +12,7 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "seed:admin": "tsx src/db/seed-admin.ts",
     "seed:admin:firebase": "tsx src/db/seed-admin-firebase.ts",
+    "seed:pets": "tsx src/db/seed-pets.ts",
     "seed:fake": "tsx src/db/seed-fake.ts",
     "benchmark": "tsx src/db/benchmark-1m.ts"
   },
